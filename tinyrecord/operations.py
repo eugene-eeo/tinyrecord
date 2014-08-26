@@ -1,6 +1,3 @@
-from tinydb.database import Element
-
-
 class Operation(object):
     def perform(self):
         raise NotImplementedError
@@ -13,10 +10,7 @@ class Insert(Operation):
     def perform(self, data):
         eid = max(data) if data else 0
         eid += 1
-        data[eid] = Element(
-            value=self.document,
-            eid=eid,
-        )
+        data[eid] = self.document
 
 
 class Update(Operation):
