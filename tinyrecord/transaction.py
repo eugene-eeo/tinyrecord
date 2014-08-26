@@ -1,5 +1,5 @@
 from threading import Lock
-from tinyrecord.operations import Insert, Remove
+from tinyrecord.operations import Insert, Remove, Update
 
 
 class AbortSignal(Exception):
@@ -7,8 +7,8 @@ class AbortSignal(Exception):
 
 
 def records(op_cls):
-    def proxy(self, document):
-        op = op_cls(self.table, document)
+    def proxy(self, *args, **kwargs):
+        op = op_cls(self.table, *args, **kwargs)
         self.record.append(op)
     return proxy
 
@@ -22,6 +22,7 @@ class transaction(object):
     def clear(self):
         del self.record[:]
 
+    update = records(Update)
     insert = records(Insert)
     remove = records(Remove)
 
@@ -35,16 +36,16 @@ class transaction(object):
             try:
                 operation.perform()
             except:
-                self.undo(upto=index)
                 operation.undo()
+                self.undo(upto=index)
                 raise
 
     def __enter__(self):
+        self.clear()
         return self
 
     def __exit__(self, type, value, traceback):
         if not traceback:
             with self.lock:
                 self.execute()
-        self.clear()
         return isinstance(value, AbortSignal)

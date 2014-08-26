@@ -9,11 +9,29 @@ class Insert(object):
         self.db = db
 
     def perform(self):
+        self.eid = self.db._last_id + 1
         self.db.insert(self.document)
-        self.eid = self.db._last_id
 
     def undo(self):
         self.db.remove(lambda x: x.eid == self.eid)
+
+
+class Update(object):
+    def __init__(self, db, update, query):
+        self.update = update
+        self.query = query
+        self.original = []
+        self.db = db
+
+    def perform(self):
+        self.original = self.db.search(self.query)
+        self.db.update(self.update, self.query)
+
+    def undo(self):
+        data = self.db._read()
+        for item in self.original:
+            data[item.eid] = item
+        self.db._write(data)
 
 
 class Remove(object):
