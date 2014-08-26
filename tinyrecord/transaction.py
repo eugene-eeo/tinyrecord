@@ -14,8 +14,9 @@ def records(op_cls):
 
 
 class Transaction(object):
+    lock = Lock()
+
     def __init__(self, table):
-        self.lock = Lock()
         self.table = table
         self.record = []
 
