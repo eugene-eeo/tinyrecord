@@ -29,6 +29,6 @@ Note that you will have to call operaions on the
 transaction object and not the database itself. Since
 tinyrecord requires some ID madness for keeping track
 of records deleted and inserted, it will only work
-with the latest release (**1.4.0**).
+with the latest development version (**2.0**).
 
 .. _TinyDB: https://github.com/msiemens/tinydb
