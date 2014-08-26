@@ -11,7 +11,7 @@ class Insert(Operation):
         self.document = document
 
     def perform(self, data):
-        eid = sorted(data)[-1] if data else 0
+        eid = max(data) if data else 0
         eid += 1
         data[eid] = Element(
             value=self.document,
