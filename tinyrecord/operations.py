@@ -36,7 +36,7 @@ class Remove(Operation):
         self.query = query
 
     def perform(self, data):
-        for item in list(self.data):
+        for item in list(data):
             value = data[item]
             if self.query(value):
-                del self.data[item]
+                del data[item]

@@ -9,7 +9,10 @@ class Changeset(object):
             operation.perform(data)
         self.db._write(data)
         if data:
-            self.db._last_id = sorted(data)[-1]
+            last_id = sorted(data)[-1]
+            db_last = self.db._last_id
+            if db_last < last_id:
+                self.db._last_id = last_id
 
     def append(self, change):
         self.record.append(change)

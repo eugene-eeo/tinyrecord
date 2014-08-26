@@ -10,6 +10,17 @@ def db():
     return TinyDB(storage=MemoryStorage).table()
 
 
+def test_remove(db):
+    [db.insert({}) for i in range(10)]
+    with transaction(db) as tr:
+        tr.remove(lambda x: True)
+
+    assert not db.all()
+
+    db.insert({})
+    assert db.all()[0].eid == 11
+
+
 def test_update(db):
     db.insert({'x': 1})
 
