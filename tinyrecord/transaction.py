@@ -1,5 +1,5 @@
 from threading import Lock
-from tinytransaction.operations import Insert, Remove
+from tinyrecord.operations import Insert, Remove
 
 
 class AbortSignal(Exception):

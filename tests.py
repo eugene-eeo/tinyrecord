@@ -1,6 +1,6 @@
 from tinydb.storages import MemoryStorage
 from tinydb.database import TinyDB, Table
-from tinytransaction import transaction, abort
+from tinyrecord import transaction, abort
 
 
 class FaultyTableRemove(Table):

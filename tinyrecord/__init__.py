@@ -1,4 +1,4 @@
-from tinytransaction.transaction import Transaction, AbortSignal
+from tinyrecord.transaction import Transaction, AbortSignal
 
 __all__ = ('transaction', 'abort')
 transaction = Transaction
