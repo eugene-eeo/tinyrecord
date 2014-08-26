@@ -25,7 +25,7 @@ a thread lock. Usage example:
         tr.insert({})
         tr.remove(where('x') == 'y')
 
-Note that you will have to call operaions on the
+Note that you will have to call operations on the
 transaction object and not the database itself. Since
 tinyrecord requires some ID madness for keeping track
 of records deleted and inserted, it will only work
