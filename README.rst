@@ -23,6 +23,7 @@ a thread lock. Usage example:
     table = TinyDB('db.json').table('table')
     with transaction(table) as tr:
         tr.insert({})
+        tr.update({'x': 'a'}, where('x') == 'z')
         tr.remove(where('x') == 'y')
 
 Note that you will have to call operations on the
