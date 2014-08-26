@@ -19,14 +19,12 @@ class FaultyTableInsert(Table):
 
 
 
-def table(cls=FaultyTableRemove, insert=True):
+def table(cls=FaultyTableRemove):
     class FaultyDB(TinyDB):
         def table(self, name='_default', **options):
             return cls(name, self, **options)
 
     db = FaultyDB(storage=MemoryStorage).table()
-    if insert:
-        [db.insert({}) for i in range(10)]
     return db
 
 
@@ -36,7 +34,7 @@ def test_transaction_abort():
 
 
 def test_transaction_insert_faulty():
-    db = table(FaultyTableInsert, insert=False)
+    db = table(FaultyTableInsert)
     try:
         with transaction(db) as tr:
             for i in range(10):
@@ -51,11 +49,12 @@ def test_transaction_insert():
     with transaction(db) as tr:
         tr.insert({})
 
-    assert len(db.all()) == 11
+    assert len(db.all()) == 1
 
 
 def test_transaction_remove():
     db = table()
+    [db.insert({}) for i in range(10)]
     try:
         with transaction(db) as tr:
             tr.remove(lambda x: True)

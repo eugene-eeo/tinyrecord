@@ -5,7 +5,7 @@ from operator import eq
 class Insert(object):
     def __init__(self, db, document):
         self.document = document
-        self.eid = None
+        self.eid = -1
         self.db = db
 
     def perform(self):
