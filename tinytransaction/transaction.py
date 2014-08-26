@@ -25,14 +25,17 @@ class Transaction(object):
     insert = records(Insert)
     remove = records(Remove)
 
+    def undo(self, upto):
+        history = self.record[:upto]
+        for item in reversed(history):
+            item.undo()
+
     def execute(self):
         for index, operation in enumerate(self.record):
             try:
                 operation.perform()
             except:
-                history = self.record[:index]
-                for item in reversed(history):
-                    item.undo()
+                self.undo(upto=index)
                 operation.undo()
                 raise
 
