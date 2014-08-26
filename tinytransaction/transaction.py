@@ -30,7 +30,8 @@ class Transaction(object):
             try:
                 operation.perform()
             except:
-                for item in self.record[:index]:
+                history = self.record[:index]
+                for item in reversed(history):
                     item.undo()
                 operation.undo()
                 raise

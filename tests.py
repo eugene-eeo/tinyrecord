@@ -37,8 +37,7 @@ def test_transaction_insert_faulty():
     db = table(FaultyTableInsert)
     try:
         with transaction(db) as tr:
-            for i in range(10):
-                tr.insert({})
+            [tr.insert({}) for i in range(10)]
         raise AssertionError
     except ValueError:
         assert not db.all()
@@ -52,7 +51,7 @@ def test_transaction_insert():
     assert len(db.all()) == 1
 
 
-def test_transaction_remove():
+def test_transaction_remove_faulty():
     db = table()
     [db.insert({}) for i in range(10)]
     try:
