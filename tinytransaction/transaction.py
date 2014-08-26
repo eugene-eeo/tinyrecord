@@ -26,10 +26,12 @@ class Transaction(object):
     remove = records(Remove)
 
     def execute(self):
-        for operation in self.record:
+        for index, operation in enumerate(self.record):
             try:
                 operation.perform()
             except:
+                for item in self.record[:index]:
+                    item.undo()
                 operation.undo()
                 raise
 

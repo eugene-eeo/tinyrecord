@@ -5,14 +5,15 @@ from operator import eq
 class Insert(object):
     def __init__(self, db, document):
         self.document = document
-        self.query = partial(eq, document)
+        self.eid = None
         self.db = db
 
     def perform(self):
         self.db.insert(self.document)
+        self.eid = self.db._last_id
 
     def undo(self):
-        self.db.remove(self.query)
+        self.db.remove(lambda x: x.eid == self.eid)
 
 
 class Remove(object):
