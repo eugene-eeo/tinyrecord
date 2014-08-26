@@ -2,7 +2,7 @@ tinytransaction
 ===============
 
 Implements experimental transaction support for the
-TinyDB NoSQL database. Usage example:
+`TinyDB`_ NoSQL database. Usage example:
 
 .. code-block:: python
 
@@ -13,3 +13,6 @@ TinyDB NoSQL database. Usage example:
     with transaction(table) as tr:
         tr.insert({})
         tr.remove(where('x') == 'y')
+
+
+.. _TinyDB: https://github.com/msiemens/tinydb
