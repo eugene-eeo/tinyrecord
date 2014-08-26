@@ -8,6 +8,8 @@ class Changeset(object):
         for operation in self.record:
             operation.perform(data)
         self.db._write(data)
+        if data:
+            self.db._last_id = sorted(data)[-1]
 
     def append(self, change):
         self.record.append(change)

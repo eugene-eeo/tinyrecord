@@ -10,7 +10,7 @@ def db():
     return TinyDB(storage=MemoryStorage).table()
 
 
-def test_transaction_update(db):
+def test_update(db):
     db.insert({'x': 1})
 
     with transaction(db) as tr:
@@ -19,7 +19,17 @@ def test_transaction_update(db):
     assert db.get(where('x') == 2)
 
 
-def test_transaction_abort(db):
+def test_atomicity(db):
+    try:
+        with transaction(db) as tr:
+            tr.insert({})
+            raise ValueError
+        raise AssertionError
+    except ValueError:
+        assert not db.all()
+
+
+def test_abort(db):
     with transaction(db) as tr:
         tr.insert({})
         abort()
@@ -27,14 +37,15 @@ def test_transaction_abort(db):
     assert not db.all()
 
 
-def test_transaction_insert(db):
+def test_insert(db):
     with transaction(db) as tr:
         tr.insert({})
 
     assert len(db.all()) == 1
+    assert db._last_id == 1
 
 
-def test_transaction_concurrent(db):
+def test_concurrent(db):
     def callback():
         with transaction(db) as tr:
             tr.insert({})
