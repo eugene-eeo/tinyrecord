@@ -5,7 +5,15 @@ def restore_records(db, records):
     db._write(data)
 
 
-class Insert(object):
+class Operation(object):
+    def perform(self):
+        raise NotImplementedError
+
+    def undo(self):
+        raise NotImplementedError
+
+
+class Insert(Operation):
     def __init__(self, db, document):
         self.document = document
         self.eid = -1
@@ -19,7 +27,7 @@ class Insert(object):
         self.db.remove(lambda x: x.eid == self.eid)
 
 
-class Update(object):
+class Update(Operation):
     def __init__(self, db, update, query):
         self.update = update
         self.query = query
@@ -34,7 +42,7 @@ class Update(object):
         restore_records(self.db, self.original)
 
 
-class Remove(object):
+class Remove(Operation):
     def __init__(self, db, query):
         self.query = query
         self.deleted = []

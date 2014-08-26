@@ -41,11 +41,11 @@ class transaction(object):
                 raise
 
     def __enter__(self):
-        self.clear()
         return self
 
     def __exit__(self, type, value, traceback):
         if not traceback:
             with self.lock:
                 self.execute()
+        self.clear()
         return isinstance(value, AbortSignal)
