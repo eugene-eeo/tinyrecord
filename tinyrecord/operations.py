@@ -1,5 +1,8 @@
-from functools import partial
-from operator import eq
+def restore_records(db, records):
+    data = db._read()
+    for item in records:
+        data[item.eid] = item
+    db._write(data)
 
 
 class Insert(object):
@@ -28,10 +31,7 @@ class Update(object):
         self.db.update(self.update, self.query)
 
     def undo(self):
-        data = self.db._read()
-        for item in self.original:
-            data[item.eid] = item
-        self.db._write(data)
+        restore_records(self.db, self.original)
 
 
 class Remove(object):
@@ -45,7 +45,4 @@ class Remove(object):
         self.db.remove(self.query)
 
     def undo(self):
-        data = self.db._read()
-        for item in self.deleted:
-            data[item.eid] = item
-        self.db._write(data)
+        restore_records(self.db, self.deleted)
