@@ -23,9 +23,6 @@ class transaction(object):
     insert = records(Insert)
     remove = records(Remove)
 
-    def clear(self):
-        self.record.clear()
-
     def __enter__(self):
         return self
 
@@ -33,5 +30,5 @@ class transaction(object):
         if not traceback:
             with self.lock:
                 self.record.execute()
-        self.clear()
+        self.record.clear()
         return isinstance(value, AbortSignal)

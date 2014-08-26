@@ -6,8 +6,13 @@ class Changeset(object):
         self.db = database
         self.record = []
 
+    def __iter__(self):
+        for item in self.record:
+            yield item
+
+    @property
     @contextmanager
-    def context(self):
+    def data(self):
         data = self.db._read()
         yield data
         self.db._write(data)
@@ -18,7 +23,7 @@ class Changeset(object):
                 self.db._last_id = last_id
 
     def execute(self):
-        with self.context() as data:
+        with self.data as data:
             for operation in self.record:
                 operation.perform(data)
 
