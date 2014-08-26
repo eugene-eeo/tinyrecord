@@ -1,44 +1,30 @@
 from threading import Lock
+from tinyrecord.changeset import Changeset
 from tinyrecord.operations import Insert, Remove, Update
+
+
+def records(op_cls):
+    def proxy(self, *args, **kwargs):
+        op = op_cls(*args, **kwargs)
+        self.record.append(op)
+    return proxy
 
 
 class AbortSignal(Exception):
     pass
 
 
-def records(op_cls):
-    def proxy(self, *args, **kwargs):
-        op = op_cls(self.table, *args, **kwargs)
-        self.record.append(op)
-    return proxy
-
-
 class transaction(object):
     def __init__(self, table):
         self.lock = Lock()
-        self.table = table
-        self.record = []
-
-    def clear(self):
-        del self.record[:]
+        self.record = Changeset(table)
 
     update = records(Update)
     insert = records(Insert)
     remove = records(Remove)
 
-    def undo(self, upto):
-        history = self.record[:upto]
-        for item in reversed(history):
-            item.undo()
-
-    def execute(self):
-        for index, operation in enumerate(self.record):
-            try:
-                operation.perform()
-            except:
-                operation.undo()
-                self.undo(upto=index)
-                raise
+    def clear(self):
+        self.record.clear()
 
     def __enter__(self):
         return self
@@ -46,6 +32,6 @@ class transaction(object):
     def __exit__(self, type, value, traceback):
         if not traceback:
             with self.lock:
-                self.execute()
+                self.record.execute()
         self.clear()
         return isinstance(value, AbortSignal)
