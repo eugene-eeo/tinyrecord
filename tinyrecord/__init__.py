@@ -1,7 +1,5 @@
-from tinyrecord.transaction import Transaction, AbortSignal
-
+from tinyrecord.transaction import transaction, AbortSignal
 __all__ = ('transaction', 'abort')
-transaction = Transaction
 
 
 def abort():

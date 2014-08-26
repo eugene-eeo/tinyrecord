@@ -13,7 +13,7 @@ def records(op_cls):
     return proxy
 
 
-class Transaction(object):
+class transaction(object):
     def __init__(self, table):
         self.lock = Lock()
         self.table = table
