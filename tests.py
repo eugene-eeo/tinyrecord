@@ -1,3 +1,4 @@
+from threading import Thread
 from tinydb.storages import MemoryStorage
 from tinydb.database import TinyDB, Table
 from tinyrecord import transaction, abort
@@ -60,3 +61,18 @@ def test_transaction_remove_faulty():
         raise AssertionError
     except ValueError:
         assert len(db.all()) == 10
+
+
+def test_transaction_concurrent():
+    db = table()
+
+    def callback():
+        with transaction(db) as tr:
+            tr.insert({})
+
+    threads = [Thread(target=callback) for i in range(5)]
+    [thread.start() for thread in threads]
+    [thread.join() for thread in threads]
+
+    ids = set(x.eid for x in db.all())
+    assert len(ids) == 5
