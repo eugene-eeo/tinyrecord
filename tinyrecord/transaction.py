@@ -1,3 +1,4 @@
+from functools import wraps
 from threading import Lock
 from tinyrecord.changeset import Changeset
 from tinyrecord.operations import (Insert, Remove,
@@ -11,6 +12,7 @@ def records(cls):
 
     :param cls: The operation class.
     """
+    @wraps(cls)
     def proxy(self, *args, **kwargs):
         self.record.append(cls(*args, **kwargs))
     return proxy
