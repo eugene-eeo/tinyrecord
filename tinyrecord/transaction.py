@@ -3,10 +3,9 @@ from tinyrecord.changeset import Changeset
 from tinyrecord.operations import Insert, Remove, Update
 
 
-def records(op_cls):
+def records(cls):
     def proxy(self, *args, **kwargs):
-        op = op_cls(*args, **kwargs)
-        self.record.append(op)
+        self.record.append(cls(*args, **kwargs))
     return proxy
 
 

@@ -28,8 +28,7 @@ a thread lock. Usage example:
 
 Note that you will have to call operations on the
 transaction object and not the database itself. Since
-tinyrecord requires some ID madness for keeping track
-of records deleted and inserted, it will only work
-with the latest development version (**2.0**).
+tinyrecord works with dictionaries and the latest
+API, it will only support the dev version (**2.0**).
 
 .. _TinyDB: https://github.com/msiemens/tinydb
