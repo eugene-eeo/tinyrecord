@@ -19,13 +19,15 @@ def test_insert_multiple(db):
 
 def test_remove(db):
     [db.insert({}) for i in range(10)]
-    with transaction(db) as tr:
-        tr.remove(lambda x: True)
+    anything = lambda x: True
 
-    assert not db.all()
+    with transaction(db) as tr:
+        tr.remove(anything)
+
+    assert len(db) == 0
 
     db.insert({})
-    assert db.all()[0].eid == 11
+    assert db.get(anything).eid == 11
 
 
 def test_update(db):
@@ -44,7 +46,7 @@ def test_atomicity(db):
             raise ValueError
         raise AssertionError
     except ValueError:
-        assert not db.all()
+        assert len(db) == 0
 
 
 def test_abort(db):
@@ -52,7 +54,7 @@ def test_abort(db):
         tr.insert({})
         abort()
 
-    assert not db.all()
+    assert len(db) == 0
 
 
 def test_insert(db):
