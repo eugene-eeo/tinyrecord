@@ -16,6 +16,7 @@ class Changeset(object):
         data = self.db._read()
         yield data
         self.db._write(data)
+        self.db._clear_query_cache()
         if data:
             d1, d2 = max(data), self.db._last_id
             self.db._last_id = d1 if d1 > d2 else d2
