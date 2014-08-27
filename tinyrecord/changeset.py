@@ -19,7 +19,7 @@ class Changeset(object):
         if not data:
             return
         last_id = max(data)
-        db_last = db._last_id
+        db_last = self.db._last_id
         if last_id > db_last:
             self.db._last_id = last_id
 
