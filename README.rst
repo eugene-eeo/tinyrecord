@@ -33,4 +33,6 @@ and not the database itself. Since tinyrecord works
 with dictionaries and the latest API, it will only
 support the dev version (**2.0**).
 
+.. image:: https://travis-ci.org/eugene-eeo/tinyrecord.svg?branch=master
+    :target: https://travis-ci.org/eugene-eeo/tinyrecord
 .. _TinyDB: https://github.com/msiemens/tinydb
