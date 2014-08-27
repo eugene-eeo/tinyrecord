@@ -3,14 +3,20 @@ class Operation(object):
         raise NotImplementedError
 
 
-class Insert(Operation):
-    def __init__(self, document):
-        self.document = document
+class InsertMultiple(Operation):
+    def __init__(self, iterable):
+        self.iterable = iterable
 
     def perform(self, data):
         eid = max(data) if data else 0
-        eid += 1
-        data[eid] = self.document
+        for element in self.iterable:
+            eid += 1
+            data[eid] = element
+
+
+class Insert(Operation):
+    def __new__(self, element):
+        return InsertMultiple((element,))
 
 
 class Update(Operation):

@@ -10,6 +10,13 @@ def db():
     return TinyDB(storage=MemoryStorage).table()
 
 
+def test_insert_multiple(db):
+    with transaction(db) as tr:
+        tr.insert_multiple({} for x in range(5))
+
+    assert len(db) == 5
+
+
 def test_remove(db):
     [db.insert({}) for i in range(10)]
     with transaction(db) as tr:
@@ -52,7 +59,7 @@ def test_insert(db):
     with transaction(db) as tr:
         tr.insert({})
 
-    assert len(db.all()) == 1
+    assert len(db) == 1
     assert db._last_id == 1
 
 
