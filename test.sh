@@ -3,3 +3,4 @@ cd 'tinydb'
 git checkout 2.0
 pip install .
 py.test tests.py
+cd -
