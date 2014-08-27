@@ -19,8 +19,8 @@ class Update(Operation):
         self.query = query
 
     def perform(self, data):
-        for item in data:
-            value = data[item]
+        for key in data:
+            value = data[key]
             if self.query(value):
                 value.update(self.update)
 
@@ -30,7 +30,7 @@ class Remove(Operation):
         self.query = query
 
     def perform(self, data):
-        for item in list(data):
-            value = data[item]
+        for key in list(data):
+            value = data[key]
             if self.query(value):
-                del data[item]
+                del data[key]
