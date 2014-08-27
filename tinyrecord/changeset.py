@@ -16,10 +16,9 @@ class Changeset(object):
         data = self.db._read()
         yield data
         self.db._write(data)
-        if not data:
-            return
-        d1, d2 = max(data), self.db._last_id
-        self.db._last_id = d1 if d1 > d2 else d2
+        if data:
+            d1, d2 = max(data), self.db._last_id
+            self.db._last_id = d1 if d1 > d2 else d2
 
     def execute(self):
         with self.data as data:
