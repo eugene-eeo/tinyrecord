@@ -58,4 +58,4 @@ class Changeset(object):
         """
         Clear the internal record.
         """
-        del self.record[:]
+        self.record = []
