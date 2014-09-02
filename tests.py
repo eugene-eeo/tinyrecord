@@ -43,6 +43,9 @@ def test_atomicity(db):
     try:
         with transaction(db) as tr:
             tr.insert({})
+            tr.insert({'x': 1})
+            tr.update({'x': 2}, where('x') == 1)
+            tr.remove(where('x') == 2)
             raise ValueError
         raise AssertionError
     except ValueError:
