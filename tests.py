@@ -1,4 +1,4 @@
-from pytest import fixture
+from pytest import fixture, raises
 from threading import Thread
 from tinydb import where, TinyDB
 from tinydb.storages import MemoryStorage
@@ -40,16 +40,14 @@ def test_update(db):
 
 
 def test_atomicity(db):
-    try:
+    with raises(ValueError):
         with transaction(db) as tr:
             tr.insert({})
             tr.insert({'x': 1})
             tr.update({'x': 2}, where('x') == 1)
             tr.remove(where('x') == 2)
             raise ValueError
-        raise AssertionError
-    except ValueError:
-        assert len(db) == 0
+    assert len(db) == 0
 
 
 def test_abort(db):
