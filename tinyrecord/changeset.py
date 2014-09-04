@@ -13,10 +13,6 @@ class Changeset(object):
         self.db = database
         self.record = []
 
-    def __iter__(self):
-        for item in self.record:
-            yield item
-
     @property
     @contextmanager
     def data(self):
