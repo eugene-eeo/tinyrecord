@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='tinydb',
-    version='2.0.0',
+    name='tinyrecord',
+    version='0.1.0',
     packages=find_packages(),
 
     zip_safe=True,
