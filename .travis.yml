@@ -6,4 +6,5 @@ python:
     - "3.3"
     - "3.4"
     - "pypy"
-script: ./test.sh
+install: pip install tinydb
+script: py.test tests.py
