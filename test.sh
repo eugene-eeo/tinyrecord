@@ -1,6 +1,2 @@
-git clone 'https://github.com/eugene-eeo/tinydb'
-cd 'tinydb'
-git checkout 2.0
-pip install .
-cd -
+pip install tinydb
 py.test tests.py
