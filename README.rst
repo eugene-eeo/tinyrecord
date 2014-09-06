@@ -9,11 +9,11 @@
 
 **Supported Pythons:** 2.6+, 3.2+
 
-Tinyrecord is a library which implements experimental
-atomic transaction support for the `TinyDB`_ NoSQL
-database. It uses a record-first then execute architecture
-which allows us to minimize the time that we are within
-a thread lock. Usage example:
+Tinyrecord is a library which implements atomic
+transaction support for the `TinyDB`_ NoSQL database.
+It uses a record-first then execute architecture which
+allows us to minimize the time that we are within a
+thread lock. Usage example:
 
 .. code-block:: python
 
@@ -26,12 +26,12 @@ a thread lock. Usage example:
         tr.update({'x': 'a'}, where('x') == 'z')
         tr.remove(where('x') == 'y')
 
-Note that due to performance reasons you cannot view the
-data within a transaction unless you've comitted. You
-will have to call operations on the transaction object
-and not the database itself. Since tinyrecord works
-with dictionaries and the latest API, it will only
-support the latest version (**2.0**).
+Note that due to performance reasons you cannot view
+the data within a transaction unless you've comitted.
+You will have to call operations on the transaction
+object and not the database itself. Since tinyrecord
+works with dictionaries and the latest API, it will
+only support the latest version (**2.0**).
 
 Installation is as simple as ``pip install tinyrecord``.
 
