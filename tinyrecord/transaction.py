@@ -5,6 +5,25 @@ from tinyrecord.operations import (Insert, Remove,
                                    Update, InsertMultiple)
 
 
+class AbortSignal(Exception):
+    """
+    Signals the abortion of a transaction. It is
+    ignored when raised within the body of a
+    transaction.
+    """
+    pass
+
+
+def abort():
+    """
+    Aborts the transaction. All operations defined on
+    the transaction will be ignored (discarded).
+    Raises the ``AbortSignal``, to be called only
+    within a transaction.
+    """
+    raise AbortSignal
+
+
 def records(cls):
     """
     Helper method for creating a method that records
@@ -16,15 +35,6 @@ def records(cls):
         self.record.append(cls(*args, **kwargs))
     update_wrapper(proxy, cls)
     return proxy
-
-
-class AbortSignal(Exception):
-    """
-    Signals the abortion of a transaction. It is
-    ignored when raised within the body of a
-    transaction.
-    """
-    pass
 
 
 class transaction(object):
