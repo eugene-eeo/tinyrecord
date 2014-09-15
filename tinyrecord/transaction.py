@@ -57,7 +57,7 @@ class transaction(object):
         if it is not an ``AbortSignal``. All actions
         are executed within a lock.
         """
-        if not traceback:
+        if not traceback and self.record.has_ops:
             with self.lock:
                 self.record.execute()
         self.record.clear()

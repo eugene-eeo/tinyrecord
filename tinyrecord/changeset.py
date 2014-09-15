@@ -14,6 +14,10 @@ class Changeset(object):
         self.record = []
 
     @property
+    def has_ops(self):
+        return bool(self.record)
+
+    @property
     @contextmanager
     def data(self):
         """
@@ -26,8 +30,10 @@ class Changeset(object):
         self.db._write(data)
         self.db._query_cache.clear()
         if data:
-            d1, d2 = max(data), self.db._last_id
-            self.db._last_id = d1 if d1 > d2 else d2
+            self.db._last_id = max(
+                max(data),
+                self.db._last_id,
+            )
 
     def execute(self):
         """
@@ -54,4 +60,4 @@ class Changeset(object):
         """
         Clear the internal record.
         """
-        self.record = []
+        del self.record[:]
