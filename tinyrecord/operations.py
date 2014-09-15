@@ -66,6 +66,5 @@ class Remove(Operation):
 
     def perform(self, data):
         for key in list(data):
-            value = data[key]
-            if self.query(value):
+            if self.query(data[key]):
                 del data[key]
