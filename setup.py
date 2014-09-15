@@ -1,9 +1,9 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name='tinyrecord',
     version='0.1.1',
-    packages=find_packages(),
+    packages=['tinyrecord'],
 
     zip_safe=True,
     author='Eugene Eeo',
