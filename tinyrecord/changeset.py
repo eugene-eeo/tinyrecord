@@ -15,6 +15,10 @@ class Changeset(object):
 
     @property
     def has_ops(self):
+        """
+        Property dictating whether the changeset has
+        pending operations or not.
+        """
         return bool(self.record)
 
     @property

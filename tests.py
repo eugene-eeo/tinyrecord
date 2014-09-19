@@ -20,10 +20,12 @@ def test_insert_multiple(db):
 def test_remove(db):
     [db.insert({}) for i in range(10)]
     anything = lambda x: True
+    db.search(anything)
 
     with transaction(db) as tr:
         tr.remove(anything)
 
+    assert not db._query_cache
     assert len(db) == 0
 
     db.insert({})
