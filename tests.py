@@ -47,7 +47,6 @@ def test_atomicity(db):
             tr.insert({})
             tr.insert({'x': 1})
             tr.update({'x': 2}, where('x') == 1)
-            tr.remove(where('x') == 2)
             raise ValueError
     assert len(db) == 0
 
