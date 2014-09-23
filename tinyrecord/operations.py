@@ -1,4 +1,10 @@
 class Operation(object):
+    """
+    An operation represents a single, atomic
+    sequence of things to do to in-memory data.
+    Every operation must implement the abstract
+    ``perform`` method.
+    """
     def perform(self):
         raise NotImplementedError
 
