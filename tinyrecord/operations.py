@@ -21,7 +21,7 @@ class InsertMultiple(Operation):
             data[eid] = element
 
 
-class Insert(Operation):
+class Insert(InsertMultiple):
     """
     Insert a single record into the database.
     An insert is just a special case of the
@@ -30,8 +30,8 @@ class Insert(Operation):
 
     :param element: The element to insert.
     """
-    def __new__(self, element):
-        return InsertMultiple((element,))
+    def __init__(self, element):
+        super(Insert, self).__init__((element,))
 
 
 class Update(Operation):
