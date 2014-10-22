@@ -33,12 +33,13 @@ def test_remove(db):
 
 
 def test_update(db):
-    db.insert({'x': 1})
+    eid = db.insert({'x': 1})
 
     with transaction(db) as tr:
         tr.update({'x': 2}, where('x') == 1)
+        tr.update({'x': 3}, eids=[eid])
 
-    assert db.get(where('x') == 2)
+    assert db.get(where('x') == 3)
 
 
 def test_atomicity(db):

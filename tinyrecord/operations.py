@@ -1,3 +1,11 @@
+def null_query(x):
+    """
+    Returns false regardless of the document
+    passed to the function.
+    """
+    return False
+
+
 class Operation(object):
     """
     An operation represents a single, atomic
@@ -49,14 +57,15 @@ class Update(Operation):
     :param query: Update all documents
         matching this query.
     """
-    def __init__(self, fields, query):
+    def __init__(self, fields, query=null_query, eids=[]):
         self.fields = fields
         self.query = query
+        self.eids = eids
 
     def perform(self, data):
         for key in data:
             value = data[key]
-            if self.query(value):
+            if key in self.eids or self.query(value):
                 value.update(self.fields)
 
 
@@ -67,10 +76,11 @@ class Remove(Operation):
 
     :param query: The query to remove.
     """
-    def __init__(self, query):
+    def __init__(self, query=null_query, eids=[]):
         self.query = query
+        self.eids = eids
 
     def perform(self, data):
         for key in list(data):
-            if self.query(data[key]):
+            if key in self.eids or self.query(data[key]):
                 del data[key]
