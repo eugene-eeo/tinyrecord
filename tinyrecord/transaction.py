@@ -2,7 +2,8 @@ from functools import update_wrapper
 from threading import Lock
 from tinyrecord.changeset import Changeset
 from tinyrecord.operations import (Insert, Remove,
-                                   Update, InsertMultiple)
+                                   Update, InsertMultiple,
+                                   UpdateCallable)
 
 
 class AbortSignal(Exception):
@@ -52,6 +53,7 @@ class transaction(object):
 
     update = records(Update)
     insert = records(Insert)
+    update_callable = records(UpdateCallable)
     insert_multiple = records(InsertMultiple)
     remove = records(Remove)
 

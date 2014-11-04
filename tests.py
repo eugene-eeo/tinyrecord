@@ -17,6 +17,18 @@ def test_insert_multiple(db):
     assert len(db) == 5
 
 
+def test_update_callable(db):
+    [db.insert({'x': {'u': 10}}) for i in range(5)]
+
+    with transaction(db) as tr:
+        def function(t):
+            t['x']['u'] = 1
+        tr.update_callable(function, lambda x: True)
+
+    assert len(db) == 5
+    assert all(x['x']['u'] == 1 for x in db.search(lambda x: True))
+
+
 def test_remove(db):
     [db.insert({}) for i in range(10)]
     anything = lambda x: True

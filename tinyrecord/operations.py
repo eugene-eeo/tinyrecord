@@ -48,7 +48,20 @@ class Insert(InsertMultiple):
         super(Insert, self).__init__((element,))
 
 
-class Update(Operation):
+class UpdateCallable(Operation):
+    def __init__(self, function, query=null_query, eids=[]):
+        self.function = function
+        self.query = query
+        self.eids = eids
+
+    def perform(self, data):
+        for key in data:
+            value = data[key]
+            if key in self.eids or self.query(value):
+                self.function(value)
+
+
+class Update(UpdateCallable):
     """
     Update the records in the database that
     match a certian *query* with the *fields*.
@@ -58,15 +71,7 @@ class Update(Operation):
         matching this query.
     """
     def __init__(self, fields, query=null_query, eids=[]):
-        self.fields = fields
-        self.query = query
-        self.eids = eids
-
-    def perform(self, data):
-        for key in data:
-            value = data[key]
-            if key in self.eids or self.query(value):
-                value.update(self.fields)
+        UpdateCallable.__init__(self, lambda x: x.update(fields), query, eids)
 
 
 class Remove(Operation):
