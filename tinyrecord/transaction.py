@@ -1,9 +1,10 @@
 from functools import update_wrapper
 from threading import Lock
 from tinyrecord.changeset import Changeset
-from tinyrecord.operations import (Insert, Remove,
-                                   Update, InsertMultiple,
-                                   UpdateCallable)
+from tinyrecord.operations import (Remove,
+                                   InsertMultiple,
+                                   UpdateCallable,
+                                   null_query)
 
 
 class AbortSignal(Exception):
@@ -51,11 +52,16 @@ class transaction(object):
         self.lock = Lock()
         self.record = Changeset(table)
 
-    update = records(Update)
-    insert = records(Insert)
     update_callable = records(UpdateCallable)
     insert_multiple = records(InsertMultiple)
     remove = records(Remove)
+
+    def insert(self, row):
+        return self.insert_multiple((row,))
+
+    def update(self, fields, query=null_query, eids=[]):
+        updator = lambda doc: doc.update(fields)
+        return self.update_callable(updator, query, eids)
 
     def __enter__(self):
         """

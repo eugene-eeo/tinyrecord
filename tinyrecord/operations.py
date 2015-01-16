@@ -35,20 +35,14 @@ class InsertMultiple(Operation):
             data[eid] = element
 
 
-class Insert(InsertMultiple):
-    """
-    Insert a single record into the database.
-    An insert is just a special case of the
-    ``InsertMultiple`` where you insert a
-    one element tuple of the element.
-
-    :param element: The element to insert.
-    """
-    def __init__(self, element):
-        super(Insert, self).__init__((element,))
-
-
 class UpdateCallable(Operation):
+    """
+    Mutate each of the records with a given
+    *function* for all records that match a
+    certain *query*.
+
+    :param fields: The fields to update.
+    """
     def __init__(self, function, query=null_query, eids=[]):
         self.function = function
         self.query = query
@@ -59,19 +53,6 @@ class UpdateCallable(Operation):
             value = data[key]
             if key in self.eids or self.query(value):
                 self.function(value)
-
-
-class Update(UpdateCallable):
-    """
-    Update the records in the database that
-    match a certian *query* with the *fields*.
-
-    :param fields: The fields to update.
-    :param query: Update all documents
-        matching this query.
-    """
-    def __init__(self, fields, query=null_query, eids=[]):
-        UpdateCallable.__init__(self, lambda x: x.update(fields), query, eids)
 
 
 class Remove(Operation):
