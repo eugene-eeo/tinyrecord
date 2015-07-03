@@ -1,5 +1,5 @@
 from functools import update_wrapper
-from threading import Lock
+from threading import RLock
 from tinyrecord.changeset import Changeset
 from tinyrecord.operations import (Remove,
                                    InsertMultiple,
@@ -49,7 +49,7 @@ class transaction(object):
     """
 
     def __init__(self, table):
-        self.lock = Lock()
+        self.lock = RLock()
         self.record = Changeset(table)
 
     update_callable = records(UpdateCallable)
@@ -78,5 +78,5 @@ class transaction(object):
         if not traceback and self.record.has_ops:
             with self.lock:
                 self.record.execute()
-        self.record.clear()
+                self.record.clear()
         return isinstance(value, AbortSignal)
