@@ -1,4 +1,4 @@
-from functools import update_wrapper
+from functools import wraps
 from threading import RLock
 from weakref import WeakKeyDictionary
 from tinyrecord.changeset import Changeset
@@ -34,9 +34,9 @@ def records(cls):
 
     :param cls: The operation class.
     """
+    @wraps(cls)
     def proxy(self, *args, **kwargs):
         self.record.append(cls(*args, **kwargs))
-    update_wrapper(proxy, cls)
     return proxy
 
 
@@ -44,9 +44,9 @@ class transaction(object):
     """
     Create an atomic transaction for the given
     *table*. All IO actions during the transaction are
-    executed within a lock.
+    executed within a database-local lock.
 
-    :param table: The TinyDB table.
+    :param table: A TinyDB table.
     """
 
     _locks = WeakKeyDictionary()
