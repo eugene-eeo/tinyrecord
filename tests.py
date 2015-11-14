@@ -93,10 +93,11 @@ def test_concurrent(db):
     def callback():
         with transaction(db) as tr:
             tr.insert({})
+            tr.insert({})
 
-    threads = [Thread(target=callback) for i in range(5)]
+    threads = [Thread(target=callback) for i in range(10)]
     [thread.start() for thread in threads]
     [thread.join() for thread in threads]
 
     ids = set(x.eid for x in db.all())
-    assert len(ids) == 5
+    assert len(ids) == 20

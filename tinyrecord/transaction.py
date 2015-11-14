@@ -1,5 +1,6 @@
 from functools import update_wrapper
 from threading import RLock
+from weakref import WeakKeyDictionary
 from tinyrecord.changeset import Changeset
 from tinyrecord.operations import (Remove,
                                    InsertMultiple,
@@ -48,9 +49,12 @@ class transaction(object):
     :param table: The TinyDB table.
     """
 
+    _locks = WeakKeyDictionary()
+
     def __init__(self, table):
-        self.lock = RLock()
         self.record = Changeset(table)
+        self.lock = (self._locks.get(table) or
+                     self._locks.setdefault(table, RLock()))
 
     update_callable = records(UpdateCallable)
     insert_multiple = records(InsertMultiple)
@@ -75,8 +79,7 @@ class transaction(object):
         if it is not an ``AbortSignal``. All actions
         are executed within a lock.
         """
-        if not traceback and self.record.has_ops:
+        if not traceback:
             with self.lock:
                 self.record.execute()
-                self.record.clear()
         return isinstance(value, AbortSignal)

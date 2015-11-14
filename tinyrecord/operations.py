@@ -46,7 +46,7 @@ class UpdateCallable(Operation):
     def __init__(self, function, query=null_query, eids=[]):
         self.function = function
         self.query = query
-        self.eids = eids
+        self.eids = set(eids)
 
     def perform(self, data):
         for key in data:
@@ -64,7 +64,7 @@ class Remove(Operation):
     """
     def __init__(self, query=null_query, eids=[]):
         self.query = query
-        self.eids = eids
+        self.eids = set(eids)
 
     def perform(self, data):
         for key in list(data):
