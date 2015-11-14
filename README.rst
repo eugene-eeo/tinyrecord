@@ -31,7 +31,7 @@ the data within a transaction unless you've comitted.
 You will have to call operations on the transaction
 object and not the database itself. Since tinyrecord
 works with dictionaries and the latest API, it will
-only support the latest version (**2.0**).
+only support the latest version (**3.0**).
 
 Installation is as simple as ``pip install tinyrecord``.
 
