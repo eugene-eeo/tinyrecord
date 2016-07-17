@@ -22,9 +22,12 @@ thread lock. Usage example:
 
     table = TinyDB('db.json').table('table')
     with transaction(table) as tr:
-        tr.insert({})
-        tr.update({'x': 'a'}, where('x') == 'z')
-        tr.remove(where('x') == 'y')
+        # insert a new record
+        tr.insert({'username': 'john'})
+        # update records matching a query
+        tr.update({'invalid': True}, where('username') == 'john')
+        # delete records
+        tr.remove(where('invalid') == True)
 
 Note that due to performance reasons you cannot view
 the data within a transaction unless you've comitted.
