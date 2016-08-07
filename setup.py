@@ -7,7 +7,7 @@ setup(
 
     zip_safe=True,
     author='Eugene Eeo',
-    author_email='packwolf58@gmail.com',
+    author_email='141bytes@gmail.com',
     description='Atomic transactions for TinyDB',
     license='MIT',
     keywords='tinydb nosql database transaction',
