@@ -1,6 +1,3 @@
-from contextlib import contextmanager
-
-
 class Changeset(object):
     """
     A changeset represents a series of changes that
@@ -13,23 +10,6 @@ class Changeset(object):
         self.db = database
         self.record = []
 
-    @contextmanager
-    def observed(self):
-        """
-        Returns the data from reading the database
-        for mutation and writes the data to the
-        database on exit.
-        """
-        data = self.db._read()
-        yield data
-        self.db._write(data)
-        self.db.clear_cache()
-        if data:
-            self.db._last_id = max(
-                max(data),
-                self.db._last_id,
-            )
-
     def execute(self):
         """
         Execute the changeset, applying every
@@ -38,9 +18,15 @@ class Changeset(object):
         it again and again it will be executed
         many times.
         """
-        with self.observed() as data:
-            for operation in self.record:
-                operation.perform(data)
+        data = self.db._read()
+        for operation in self.record:
+            operation.perform(data)
+        self.db._write(data)
+        self.db.clear_cache()
+        self.db._last_id = max(
+            max(data) if data else -1,
+            self.db._last_id,
+        )
 
     def append(self, change):
         """

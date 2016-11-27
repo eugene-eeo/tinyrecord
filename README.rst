@@ -28,13 +28,17 @@ thread lock. Usage example:
         tr.update({'invalid': True}, where('username') == 'john')
         # delete records
         tr.remove(where('invalid') == True)
+        # update using a function
+        tr.update_callable(updater, where(...))
+        # insert many items
+        tr.insert_multiple(documents)
 
 Note that due to performance reasons you cannot view
 the data within a transaction unless you've comitted.
 You will have to call operations on the transaction
 object and not the database itself. Since tinyrecord
 works with dictionaries and the latest API, it will
-only support the latest version (**3.0**).
+only support the latest version (**3.x**).
 
 Installation is as simple as ``pip install tinyrecord``.
 

@@ -1,5 +1,5 @@
 from functools import wraps
-from threading import RLock
+from threading import Lock
 from weakref import WeakKeyDictionary
 from tinyrecord.changeset import Changeset
 from tinyrecord.operations import (Remove,
@@ -54,7 +54,7 @@ class transaction(object):
     def __init__(self, table):
         self.record = Changeset(table)
         self.lock = (self._locks.get(table) or
-                     self._locks.setdefault(table, RLock()))
+                     self._locks.setdefault(table, Lock()))
 
     update_callable = records(UpdateCallable)
     insert_multiple = records(InsertMultiple)
