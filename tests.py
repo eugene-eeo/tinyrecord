@@ -42,6 +42,7 @@ def test_remove(db):
 
     db.insert({})
     assert db.get(anything).eid == 11
+    assert db.get(anything).doc_id == 11
 
 
 def test_remove_eids(db):
@@ -53,7 +54,16 @@ def test_remove_eids(db):
     assert not db.get(eid=eid)
 
 
-def test_update(db):
+def test_remove_doc_ids(db):
+    doc_id = db.insert({'x': 1})
+
+    with transaction(db) as tr:
+        tr.remove(doc_ids=[doc_id])
+
+    assert not db.get(doc_id=doc_id)
+
+
+def test_legacy_update(db):
     eid = db.insert({'x': 1})
 
     with transaction(db) as tr:
@@ -61,6 +71,16 @@ def test_update(db):
         tr.update({'x': 3}, eids=[eid])
 
     assert db.get(where('x') == 3).eid == eid
+
+
+def test_update(db):
+    doc_id = db.insert({'x': 1})
+
+    with transaction(db) as tr:
+        tr.update({'x': 2}, where('x') == 1)
+        tr.update({'x': 3}, doc_ids=[doc_id])
+
+    assert db.get(where('x') == 3).doc_id == doc_id
 
 
 def test_atomicity(db):
@@ -99,5 +119,5 @@ def test_concurrent(db):
     [thread.start() for thread in threads]
     [thread.join() for thread in threads]
 
-    ids = set(x.eid for x in db.all())
+    ids = set(x.doc_id for x in db.all())
     assert len(ids) == 20
