@@ -63,9 +63,11 @@ class transaction(object):
     def insert(self, row):
         return self.insert_multiple((row,))
 
-    def update(self, fields, query=null_query, eids=[]):
+    def update(self, fields, query=null_query, doc_ids=[], eids=[]):
         updator = lambda doc: doc.update(fields)
-        return self.update_callable(updator, query, eids)
+        if eids and doc_ids:
+            raise TypeError('cannot pass both eids and doc_ids')
+        return self.update_callable(updator, query, doc_ids, eids)
 
     def __enter__(self):
         """
