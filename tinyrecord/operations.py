@@ -54,7 +54,7 @@ class UpdateCallable(Operation):
     def perform(self, data):
         for key in data:
             value = data[key]
-            if key in self.doc_ids or self.eids or self.query(value):
+            if key in self.doc_ids or key in self.eids or self.query(value):
                 self.function(value)
 
 
@@ -74,5 +74,5 @@ class Remove(Operation):
 
     def perform(self, data):
         for key in list(data):
-            if key in self.doc_ids or self.eids or self.query(data[key]):
+            if key in self.doc_ids or key in self.eids or self.query(data[key]):
                 del data[key]
