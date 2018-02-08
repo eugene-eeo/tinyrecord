@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='tinyrecord',
-    version='0.1.4',
+    version='0.1.5',
     packages=['tinyrecord'],
 
     zip_safe=True,
