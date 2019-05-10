@@ -1,0 +1,5 @@
+include README.rst
+include LICENSE
+include db.json
+include test.py tests.py
+global-exclude *.orig *.py[co] *.log *.swp
