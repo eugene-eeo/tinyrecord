@@ -8,5 +8,5 @@ python:
     - "3.6"
     - "3.7"
     - "pypy"
-install: pip install tinydb
+install: pip install "tinydb<4"
 script: py.test tests.py
