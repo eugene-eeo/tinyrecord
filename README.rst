@@ -7,7 +7,7 @@
                    /___/
 
 
-**Supported Pythons:** 2.6+, 3.3+
+**Supported Pythons:** 3.5+
 
 Tinyrecord is a library which implements atomic
 transaction support for the `TinyDB`_ NoSQL database.
