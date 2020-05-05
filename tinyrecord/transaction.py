@@ -40,7 +40,7 @@ def records(cls):
     return proxy
 
 
-class transaction(object):
+class transaction:
     """
     Create an atomic transaction for the given
     *table*. All IO actions during the transaction are

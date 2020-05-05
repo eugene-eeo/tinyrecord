@@ -6,7 +6,7 @@ def null_query(x):
     return False
 
 
-class Operation(object):
+class Operation:
     """
     An operation represents a single, atomic
     sequence of things to do to in-memory data.
