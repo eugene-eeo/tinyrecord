@@ -43,18 +43,15 @@ class UpdateCallable(Operation):
 
     :param fields: The fields to update.
     """
-    def __init__(self, function, query=null_query, doc_ids=[], eids=[]):
+    def __init__(self, function, query=null_query, doc_ids=[]):
         self.function = function
         self.query = query
-        if eids and doc_ids:
-            raise TypeError('cannot pass both eids and doc_ids')
         self.doc_ids = set(doc_ids)
-        self.eids = set(eids)
 
     def perform(self, data):
         for key in data:
             value = data[key]
-            if key in self.doc_ids or key in self.eids or self.query(value):
+            if key in self.doc_ids or self.query(value):
                 self.function(value)
 
 
@@ -65,14 +62,11 @@ class Remove(Operation):
 
     :param query: The query to remove.
     """
-    def __init__(self, query=null_query, doc_ids=[], eids=[]):
+    def __init__(self, query=null_query, doc_ids=[]):
         self.query = query
-        if eids and doc_ids:
-            raise TypeError('cannot pass both eids and doc_ids')
         self.doc_ids = set(doc_ids)
-        self.eids = set(eids)
 
     def perform(self, data):
         for key in list(data):
-            if key in self.doc_ids or key in self.eids or self.query(data[key]):
+            if key in self.doc_ids or self.query(data[key]):
                 del data[key]

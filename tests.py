@@ -41,19 +41,7 @@ def test_remove(db):
     assert len(db) == 0
 
     db.insert({})
-    assert db.get(anything).eid == 11
     assert db.get(anything).doc_id == 11
-
-
-def test_remove_eids(db):
-    eid = db.insert({'x': 1})
-    other_eid = db.insert({'x': 4})
-
-    with transaction(db) as tr:
-        tr.remove(eids=[eid])
-
-    assert not db.get(eid=eid)
-    assert db.get(eid=other_eid)
 
 
 def test_remove_doc_ids(db):
@@ -65,18 +53,6 @@ def test_remove_doc_ids(db):
 
     assert not db.get(doc_id=doc_id)
     assert db.get(doc_id=other_doc_id)
-
-
-def test_legacy_update(db):
-    eid = db.insert({'x': 1})
-    other_eid = db.insert({'x': 4})
-
-    with transaction(db) as tr:
-        tr.update({'x': 2}, where('x') == 1)
-        tr.update({'x': 3}, eids=[eid])
-
-    assert db.get(where('x') == 3).eid == eid
-    assert db.get(where('x') == 4).eid == other_eid
 
 
 def test_update(db):
