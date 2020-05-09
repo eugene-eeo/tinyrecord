@@ -7,7 +7,7 @@ from tinyrecord import transaction, abort
 
 @fixture
 def db():
-    return TinyDB(storage=MemoryStorage).table()
+    return TinyDB(storage=MemoryStorage).table('test_table')
 
 
 def test_insert_multiple(db):
