@@ -4,8 +4,7 @@ from weakref import WeakKeyDictionary
 from tinyrecord.changeset import Changeset
 from tinyrecord.operations import (Remove,
                                    InsertMultiple,
-                                   UpdateCallable,
-                                   null_query)
+                                   Update)
 
 
 class AbortSignal(Exception):
@@ -56,16 +55,12 @@ class transaction:
         self.lock = (self._locks.get(table) or
                      self._locks.setdefault(table, Lock()))
 
-    update_callable = records(UpdateCallable)
     insert_multiple = records(InsertMultiple)
+    update = records(Update)
     remove = records(Remove)
 
     def insert(self, row):
         return self.insert_multiple((row,))
-
-    def update(self, fields, query=null_query, doc_ids=[]):
-        updator = lambda doc: doc.update(fields)
-        return self.update_callable(updator, query, doc_ids)
 
     def __enter__(self):
         """

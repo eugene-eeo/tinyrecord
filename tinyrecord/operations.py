@@ -1,11 +1,3 @@
-def null_query(x):
-    """
-    Returns false regardless of the document
-    passed to the function.
-    """
-    return False
-
-
 class Operation:
     """
     An operation represents a single, atomic
@@ -35,38 +27,60 @@ class InsertMultiple(Operation):
             data[doc_id] = element
 
 
-class UpdateCallable(Operation):
+class Update(Operation):
     """
     Mutate each of the records with a given
     *function* for all records that match a
-    certain *query*.
+    certain *query* (if specified). If *doc_ids*
+    is specified, then the update is performed
+    over those which have doc_id in *doc_ids*.
 
-    :param fields: The fields to update.
+    :param function: Updator function, or a dictionary
+                     of fields to update.
+    :param query:    Query function.
+    :param doc_ids:  Iterable of document IDs.
     """
-    def __init__(self, function, query=null_query, doc_ids=[]):
-        self.function = function
+    def __init__(self, function, query=None, doc_ids=None):
+        if query is None and doc_ids is None:
+            raise TypeError("query or doc_ids must be specified")
+        self.function = function if callable(function) else \
+                        lambda x: x.update(function)
         self.query = query
-        self.doc_ids = set(doc_ids)
+        self.doc_ids = doc_ids
 
     def perform(self, data):
-        for key in data:
-            value = data[key]
-            if key in self.doc_ids or self.query(value):
-                self.function(value)
+        if self.query is not None:
+            for key in data:
+                value = data[key]
+                if self.query(value):
+                    self.function(value)
+        else:
+            for key, value in data.items():
+                if key in self.doc_ids:
+                    self.function(value)
 
 
 class Remove(Operation):
     """
     Remove documents from the DB matching
-    the given *query*.
+    the given *query*, or alternatively if
+    *doc_ids* is specified, then those which
+    have the given doc_ids.
 
-    :param query: The query to remove.
+    :param query: Query.
+    :param doc_ids: Document ids.
     """
-    def __init__(self, query=null_query, doc_ids=[]):
+    def __init__(self, query=None, doc_ids=None):
+        if query is None and doc_ids is None:
+            raise TypeError("query or doc_ids must be specified")
         self.query = query
-        self.doc_ids = set(doc_ids)
+        self.doc_ids = set(doc_ids) if doc_ids is not None else None
 
     def perform(self, data):
-        for key in list(data):
-            if key in self.doc_ids or self.query(data[key]):
-                del data[key]
+        if self.query is not None:
+            for key in list(data):
+                if self.query(data[key]):
+                    del data[key]
+        else:
+            for key in self.doc_ids:
+                data.pop(key)

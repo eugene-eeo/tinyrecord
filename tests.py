@@ -7,7 +7,7 @@ from tinyrecord import transaction, abort
 
 @fixture
 def db():
-    return TinyDB(storage=MemoryStorage).table('test_table')
+    return TinyDB(storage=MemoryStorage).table('table')
 
 
 def test_insert_multiple(db):
@@ -18,20 +18,22 @@ def test_insert_multiple(db):
 
 
 def test_update_callable(db):
+    match_all = lambda x: True  # noqa: E731
     [db.insert({'x': {'u': 10}}) for i in range(5)]
 
     with transaction(db) as tr:
         def function(t):
             t['x']['u'] = 1
-        tr.update_callable(function, lambda x: True)
+        tr.update(function, match_all)
 
     assert len(db) == 5
-    assert all(x['x']['u'] == 1 for x in db.search(lambda x: True))
+    assert all(x['x']['u'] == 1 for x in db.search(match_all))
 
 
 def test_remove(db):
     [db.insert({}) for i in range(10)]
-    anything = lambda x: True
+    print(db._storage.read()['table'])
+    anything = lambda x: True  # noqa: E731
     db.search(anything)
 
     with transaction(db) as tr:
@@ -41,7 +43,7 @@ def test_remove(db):
     assert len(db) == 0
 
     db.insert({})
-    assert db.get(anything).doc_id == 11
+    assert db.get(anything) == {}
 
 
 def test_remove_doc_ids(db):
@@ -88,9 +90,7 @@ def test_abort(db):
 def test_insert(db):
     with transaction(db) as tr:
         tr.insert({})
-
     assert len(db) == 1
-    assert db._last_id == 1
 
 
 def test_concurrent(db):
@@ -105,3 +105,22 @@ def test_concurrent(db):
 
     ids = {x.doc_id for x in db.all()}
     assert len(ids) == 20
+
+
+def test_abort(db):
+    db.insert({"1": 1})
+    db.insert({"2": 2})
+    values = db._storage.read()
+
+    def bad(x):
+        raise Exception("wtf!")
+
+    with raises(Exception):
+        with transaction(db) as tr:
+            tr.insert({"3": 3})
+            tr.insert({"4": 4})
+            tr.update({"2": 3}, doc_ids=[2])
+            tr.update({}, bad)
+
+    assert len(db) == 2
+    assert db._storage.read() == db._storage.read()
