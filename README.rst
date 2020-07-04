@@ -29,7 +29,7 @@ thread lock. Usage example:
         # delete records
         tr.remove(where('invalid') == True)
         # update using a function
-        tr.update_callable(updater, where(...))
+        tr.update(updater, where(...))
         # insert many items
         tr.insert_multiple(documents)
 
