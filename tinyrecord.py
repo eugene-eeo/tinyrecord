@@ -9,9 +9,9 @@
     :license: MIT, see LICENSE for more details.
 """
 
+import copy
 from contextlib import contextmanager
 from tinydb import TinyDB
-from tinydb.table import Table
 from tinydb.storages import MemoryStorage
 
 
@@ -44,8 +44,7 @@ def transaction(db, lock=None):
     """
     lock = null_lock() if lock is None else lock
     with lock:
-        data = db.storage.read()
-        data = data.copy() if isinstance(data, dict) else data
+        data = copy.deepcopy(db.storage.read())
         tmp_db = TinyDB(storage=MemoryStorage)
         tmp_db.table_class = db.table_class
         tmp_db.storage.write(data)
@@ -55,6 +54,7 @@ def transaction(db, lock=None):
             db.storage.write(tmp_db.storage.read())
             for item in tmp_db.tables():
                 db.table(item).clear_cache()
+            del data
 
         except AbortTransaction:
             pass
