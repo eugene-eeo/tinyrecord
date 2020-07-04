@@ -32,7 +32,6 @@ def test_update_callable(db):
 
 def test_remove(db):
     [db.insert({}) for i in range(10)]
-    print(db._storage.read()['table'])
     anything = lambda x: True  # noqa: E731
     db.search(anything)
 
