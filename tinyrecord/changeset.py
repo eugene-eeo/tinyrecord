@@ -3,11 +3,11 @@ class Changeset(object):
     A changeset represents a series of changes that
     can be applied to the *database*.
 
-    :param database: The TinyDB table.
+    :param table: The TinyDB table.
     """
 
-    def __init__(self, database):
-        self.db = database
+    def __init__(self, table):
+        self.table = table
         self.record = []
 
     def execute(self):
@@ -18,15 +18,12 @@ class Changeset(object):
         it again and again it will be executed
         many times.
         """
-        data = self.db._read()
-        for operation in self.record:
-            operation.perform(data)
-        self.db._write(data)
-        self.db.clear_cache()
-        self.db._last_id = max(
-            max(data) if data else -1,
-            self.db._last_id,
-        )
+        def updater(docs):
+            for op in self.record:
+                op.perform(docs)
+
+        self.table._update_table(updater)
+        self.table._next_id = None
 
     def append(self, change):
         """
