@@ -102,7 +102,7 @@ def test_concurrent(db):
     [thread.start() for thread in threads]
     [thread.join() for thread in threads]
 
-    ids = set(x.doc_id for x in db.all())
+    ids = {x.doc_id for x in db.all()}
     assert len(ids) == 20
 
 

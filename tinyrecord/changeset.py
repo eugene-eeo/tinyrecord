@@ -1,4 +1,4 @@
-class Changeset(object):
+class Changeset:
     """
     A changeset represents a series of changes that
     can be applied to the *database*.
