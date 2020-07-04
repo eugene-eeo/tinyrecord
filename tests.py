@@ -1,125 +1,82 @@
-from pytest import fixture, raises
-from threading import Thread
-from tinydb import where, TinyDB
-from tinydb.storages import MemoryStorage
+import pytest
+from tinydb import TinyDB, where
+from tinydb.storages import MemoryStorage, JSONStorage
 from tinyrecord import transaction, abort
 
 
-@fixture
-def db():
-    return TinyDB(storage=MemoryStorage).table('table')
-
-
-def test_insert_multiple(db):
-    with transaction(db) as tr:
-        tr.insert_multiple({} for x in range(5))
-
-    assert len(db) == 5
-
-
-def test_update_callable(db):
-    match_all = lambda x: True  # noqa: E731
-    [db.insert({'x': {'u': 10}}) for i in range(5)]
-
-    with transaction(db) as tr:
-        def function(t):
-            t['x']['u'] = 1
-        tr.update(function, match_all)
-
-    assert len(db) == 5
-    assert all(x['x']['u'] == 1 for x in db.search(match_all))
-
-
-def test_remove(db):
-    [db.insert({}) for i in range(10)]
-    anything = lambda x: True  # noqa: E731
-    db.search(anything)
-
-    with transaction(db) as tr:
-        tr.remove(anything)
-
-    assert not db._query_cache
-    assert len(db) == 0
-
-    db.insert({})
-    assert db.get(anything) == {}
-
-
-def test_remove_doc_ids(db):
-    doc_id = db.insert({'x': 1})
-    other_doc_id = db.insert({'x': 4})
-
-    with transaction(db) as tr:
-        tr.remove(doc_ids=[doc_id])
-
-    assert not db.get(doc_id=doc_id)
-    assert db.get(doc_id=other_doc_id)
-
-
-def test_update(db):
-    doc_id = db.insert({'x': 1})
-    other_doc_id = db.insert({'x': 4})
-
-    with transaction(db) as tr:
-        tr.update({'x': 2}, where('x') == 1)
-        tr.update({'x': 3}, doc_ids=[doc_id])
-
-    assert db.get(where('x') == 3).doc_id == doc_id
-    assert db.get(where('x') == 4).doc_id == other_doc_id
-
-
-def test_atomicity(db):
-    with raises(ValueError):
-        with transaction(db) as tr:
-            tr.insert({})
-            tr.insert({'x': 1})
-            tr.update({'x': 2}, where('x') == 1)
-            raise ValueError
-    assert len(db) == 0
+@pytest.fixture(params=[
+    MemoryStorage,
+    JSONStorage,
+])
+def db(request, tmp_path):
+    storage = request.param
+    params = {'storage': storage}
+    if storage is JSONStorage:
+        params['path'] = str(tmp_path / "db.json")
+    return TinyDB(**params)
 
 
 def test_abort(db):
-    with transaction(db) as tr:
-        tr.insert({})
+    db.table('test').insert_multiple([
+        {"a": 1},
+        {"b": 2},
+        {"c": 3},
+    ])
+    data = db.storage.read().copy()
+
+    with transaction(db) as db2:
+        db2.table('test').remove(where('a') == 1)
+        db2.table('test').remove(where('b') == 2)
+
+        assert len(db2.table('test')) == 1
+        assert db2.table('test').get(where('c') == 3) == {'c': 3}
         abort()
 
-    assert len(db) == 0
+    assert db.storage.read() == data
 
 
-def test_insert(db):
-    with transaction(db) as tr:
-        tr.insert({})
-    assert len(db) == 1
+def test_failed_txn(db):
+    db.table('test').insert_multiple([
+        {"a": 1},
+        {"b": 2},
+        {"c": 3},
+    ])
+    data = db.storage.read().copy()
+
+    with pytest.raises(Exception):
+        with transaction(db) as db2:
+            db2.table('test').remove(where('a') == 1)
+            db2.table('test').remove(where('b') == 2)
+            raise Exception(1)
+
+    assert db.storage.read() == data
 
 
-def test_concurrent(db):
-    def callback():
-        with transaction(db) as tr:
-            tr.insert({})
-            tr.insert({})
+def test_txn_create_tables(db):
+    with transaction(db) as db2:
+        db2.table('users').insert({'uid': 1})
+        db2.table('users').insert({'uid': 2})
 
-    threads = [Thread(target=callback) for i in range(10)]
-    [thread.start() for thread in threads]
-    [thread.join() for thread in threads]
+        a_id = db2.insert({'a': 1})
+        b_id = db2.insert({'b': 2})
 
-    ids = {x.doc_id for x in db.all()}
-    assert len(ids) == 20
+        assert db2.get(where('a') == 1) == {'a': 1}
+        assert db2.get(where('a') == 1).doc_id == a_id
+        assert db2.get(where('b') == 2).doc_id == b_id
+
+    assert db.tables() == {db.default_table_name, 'users'}
+    assert db.get(where('a') == 1).doc_id == a_id
+    assert db.get(where('b') == 2).doc_id == b_id
+    assert db.table('users').get(where('uid') == 1)
+    assert db.table('users').get(where('uid') == 2)
 
 
-def test_abort(db):
-    db.insert({"1": 1})
-    db.insert({"2": 2})
-    values = db._storage.read()
+def test_txn_flushes_query_cache(db):
+    db.insert({'a': 1, 'x': 1})
+    db.insert({'a': 1, 'x': 2})
+    db.search(where('a') == 1)
 
-    def bad(x):
-        raise Exception("wtf!")
+    with transaction(db) as db2:
+        db2.remove(where('x') == 2)
 
-    with raises(Exception):
-        with transaction(db) as tr:
-            tr.insert({"3": 3})
-            tr.insert({"4": 4})
-            tr.update({"2": 3}, doc_ids=[2])
-            tr.update({}, bad)
-
-    assert len(db) == 2
-    assert db._storage.read() == db._storage.read()
+    assert db.search(where('a') == 1) == [{'a': 1, 'x': 1}]

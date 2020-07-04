@@ -18,9 +18,10 @@ Operating System :: MacOS :: MacOS X
 
 setup(
     name='tinyrecord',
-    version='0.1.4',
-    packages=['tinyrecord'],
+    version='0.2.0',
+    py_modules=['tinyrecord'],
     python_requires='>=3.5',
+    install_requires=['tinydb>=4.0.0'],
     classifiers=filter(None, classifiers.split('\n')),
     zip_safe=True,
     author='Eugene Eeo',
