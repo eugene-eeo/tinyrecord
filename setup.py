@@ -18,7 +18,7 @@ Operating System :: MacOS :: MacOS X
 
 setup(
     name='tinyrecord',
-    version='0.1.4',
+    version='0.2.0',
     packages=['tinyrecord'],
     python_requires='>=3.5',
     classifiers=filter(None, classifiers.split('\n')),
