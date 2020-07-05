@@ -1,3 +1,4 @@
+import os
 from setuptools import setup
 
 classifiers = """\
@@ -16,6 +17,7 @@ Operating System :: Unix
 Operating System :: MacOS :: MacOS X
 """
 
+curr_path = os.path.abspath(os.path.dirname(__file__))
 setup(
     name='tinyrecord',
     version='0.2.0',
@@ -25,6 +27,8 @@ setup(
     zip_safe=True,
     author='Eugene Eeo',
     author_email='141bytes@gmail.com',
+    long_description=open(os.path.join(curr_path, 'README.rst'), 'r').read(),
+    long_description_content_type='text/x-rst',
     description='Atomic transactions for TinyDB',
     license='MIT',
     keywords='tinydb nosql database transaction',
