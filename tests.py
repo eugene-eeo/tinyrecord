@@ -106,7 +106,7 @@ def test_concurrent(db):
     assert len(ids) == 20
 
 
-def test_abort(db):
+def test_raise(db):
     db.insert({"1": 1})
     db.insert({"2": 2})
     values = db._storage.read()
@@ -122,4 +122,4 @@ def test_abort(db):
             tr.update({}, bad)
 
     assert len(db) == 2
-    assert db._storage.read() == db._storage.read()
+    assert values == db._storage.read()
