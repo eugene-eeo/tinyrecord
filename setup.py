@@ -21,7 +21,7 @@ Operating System :: MacOS :: MacOS X
 curr_path = os.path.abspath(os.path.dirname(__file__))
 setup(
     name='tinyrecord',
-    version='0.2.0',
+    version='0.2.1',
     packages=['tinyrecord'],
     package_data={'tinyrecord': ['py.typed']},
     python_requires='>=3.6',
