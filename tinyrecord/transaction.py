@@ -7,7 +7,8 @@ from weakref import WeakKeyDictionary
 from tinydb.table import Table
 
 from tinyrecord.changeset import Changeset
-from tinyrecord.operations import (Remove,
+from tinyrecord.operations import (Operation,
+                                   Remove,
                                    InsertMultiple,
                                    Update)
 
