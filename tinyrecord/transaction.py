@@ -1,8 +1,14 @@
 from functools import wraps
 from threading import Lock
+from types import TracebackType
+from typing import Any, Callable, MutableMapping, NoReturn, Optional, Type
 from weakref import WeakKeyDictionary
+
+from tinydb.table import Table
+
 from tinyrecord.changeset import Changeset
-from tinyrecord.operations import (Remove,
+from tinyrecord.operations import (Operation,
+                                   Remove,
                                    InsertMultiple,
                                    Update)
 
@@ -16,7 +22,7 @@ class AbortSignal(Exception):
     pass
 
 
-def abort():
+def abort() -> NoReturn:
     """
     Aborts the transaction. All operations defined on
     the transaction will be ignored (discarded).
@@ -26,7 +32,7 @@ def abort():
     raise AbortSignal
 
 
-def records(cls):
+def records(cls: Type[Operation]) -> Callable[..., None]:
     """
     Helper method for creating a method that records
     another operation to the changeset.
@@ -34,8 +40,9 @@ def records(cls):
     :param cls: The operation class.
     """
     @wraps(cls)
-    def proxy(self, *args, **kwargs):
-        self.record.append(cls(*args, **kwargs))
+    def proxy(self: "transaction", *args: Any, **kwargs: Any) -> None:
+        # Too many arguments for "Operation"
+        self.record.append(cls(*args, **kwargs))  # type: ignore[call-arg]
     return proxy
 
 
@@ -48,9 +55,9 @@ class transaction:
     :param table: A TinyDB table.
     """
 
-    _locks = WeakKeyDictionary()
+    _locks: MutableMapping[Table, Lock] = WeakKeyDictionary()
 
-    def __init__(self, table):
+    def __init__(self, table: Table) -> None:
         self.record = Changeset(table)
         self.lock = (self._locks.get(table) or
                      self._locks.setdefault(table, Lock()))
@@ -59,16 +66,21 @@ class transaction:
     update = records(Update)
     remove = records(Remove)
 
-    def insert(self, row):
-        return self.insert_multiple((row,))
+    def insert(self, row: Any) -> None:
+        self.insert_multiple((row,))
 
-    def __enter__(self):
+    def __enter__(self) -> "transaction":
         """
         Enter a transaction.
         """
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(
+        self,
+        type: Optional[Type[BaseException]],
+        value: Optional[BaseException],
+        traceback: Optional[TracebackType]
+    ) -> bool:
         """
         Commits the transaction and raises a traceback
         if it is not an ``AbortSignal``. All actions

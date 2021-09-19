@@ -1,3 +1,8 @@
+from typing import Any, Callable, Dict, Iterable, Optional
+
+QueryFunction = Callable[[Any], bool]
+
+
 class Operation:
     """
     An operation represents a single, atomic
@@ -5,7 +10,7 @@ class Operation:
     Every operation must implement the abstract
     ``perform`` method.
     """
-    def perform(self):
+    def perform(self, data: Dict[int, Any]) -> None:
         raise NotImplementedError
 
 
@@ -17,10 +22,10 @@ class InsertMultiple(Operation):
     :param iterable: The iterable of elements to
         be inserted into the DB.
     """
-    def __init__(self, iterable):
+    def __init__(self, iterable: Iterable[Any]) -> None:
         self.iterable = iterable
 
-    def perform(self, data):
+    def perform(self, data: Dict[int, Any]) -> None:
         doc_id = max(data) if data else 0
         for element in self.iterable:
             doc_id += 1
@@ -40,7 +45,12 @@ class Update(Operation):
     :param query:    Query function.
     :param doc_ids:  Iterable of document IDs.
     """
-    def __init__(self, function, query=None, doc_ids=None):
+    def __init__(
+        self,
+        function: Callable[[Any], Any],
+        query: Optional[QueryFunction] = None,
+        doc_ids: Optional[Iterable[int]] = None
+    ) -> None:
         if query is None and doc_ids is None:
             raise TypeError("query or doc_ids must be specified")
         self.function = function if callable(function) else \
@@ -48,13 +58,14 @@ class Update(Operation):
         self.query = query
         self.doc_ids = doc_ids
 
-    def perform(self, data):
+    def perform(self, data: Dict[int, Any]) -> None:
         if self.query is not None:
             for key in data:
                 value = data[key]
                 if self.query(value):
                     self.function(value)
         else:
+            assert self.doc_ids is not None
             for key, value in data.items():
                 if key in self.doc_ids:
                     self.function(value)
@@ -70,17 +81,22 @@ class Remove(Operation):
     :param query: Query.
     :param doc_ids: Document ids.
     """
-    def __init__(self, query=None, doc_ids=None):
+    def __init__(
+        self,
+        query: Optional[QueryFunction] = None,
+        doc_ids: Optional[Iterable[int]] = None
+    ) -> None:
         if query is None and doc_ids is None:
             raise TypeError("query or doc_ids must be specified")
         self.query = query
         self.doc_ids = set(doc_ids) if doc_ids is not None else None
 
-    def perform(self, data):
+    def perform(self, data: Dict[int, Any]) -> None:
         if self.query is not None:
             for key in list(data):
                 if self.query(data[key]):
                     del data[key]
         else:
+            assert self.doc_ids is not None
             for key in self.doc_ids:
                 data.pop(key)
