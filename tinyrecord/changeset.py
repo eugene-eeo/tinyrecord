@@ -1,3 +1,10 @@
+from typing import Any, Dict, List
+
+from tinydb.table import Table
+
+from tinyrecord.operations import Operation
+
+
 class Changeset:
     """
     A changeset represents a series of changes that
@@ -6,11 +13,11 @@ class Changeset:
     :param table: The TinyDB table.
     """
 
-    def __init__(self, table):
+    def __init__(self, table: Table) -> None:
         self.table = table
-        self.record = []
+        self.record: List[Operation] = []
 
-    def execute(self):
+    def execute(self) -> None:
         """
         Execute the changeset, applying every
         operation on the database. Note that this
@@ -18,14 +25,14 @@ class Changeset:
         it again and again it will be executed
         many times.
         """
-        def updater(docs):
+        def updater(docs: Dict[int, Any]) -> None:
             for op in self.record:
                 op.perform(docs)
 
         self.table._update_table(updater)
         self.table._next_id = None
 
-    def append(self, change):
+    def append(self, change: Operation) -> None:
         """
         Append a *change* to the internal record
         of operations.
