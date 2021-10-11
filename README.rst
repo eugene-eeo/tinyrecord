@@ -42,6 +42,6 @@ only support the latest version (**4.x**).
 
 Installation is as simple as ``pip install tinyrecord``.
 
-.. image:: https://travis-ci.org/eugene-eeo/tinyrecord.svg?branch=master
-    :target: https://travis-ci.org/eugene-eeo/tinyrecord
+.. image:: https://github.com/eugene-eeo/tinyrecord/actions/workflows/test.yml/badge.svg
+    :target: https://github.com/eugene-eeo/tinyrecord/actions/workflows/test.yml
 .. _TinyDB: https://github.com/msiemens/tinydb
