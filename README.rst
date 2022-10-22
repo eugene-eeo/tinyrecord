@@ -7,7 +7,7 @@
                    /___/
 
 
-**Supported Pythons:** 3.5+
+**Supported Pythons:** 3.6+
 
 Tinyrecord is a library which implements atomic
 transaction support for the `TinyDB`_ NoSQL database.
@@ -34,7 +34,7 @@ thread lock. Usage example:
         tr.insert_multiple(documents)
 
 Note that due to performance reasons you cannot view
-the data within a transaction unless you've comitted.
+the data within a transaction unless you've committed.
 You will have to call operations on the transaction
 object and not the database itself. Since tinyrecord
 works with dictionaries and the latest API, it will
@@ -42,6 +42,6 @@ only support the latest version (**4.x**).
 
 Installation is as simple as ``pip install tinyrecord``.
 
-.. image:: https://travis-ci.org/eugene-eeo/tinyrecord.svg?branch=master
-    :target: https://travis-ci.org/eugene-eeo/tinyrecord
+.. image:: https://github.com/eugene-eeo/tinyrecord/actions/workflows/test.yml/badge.svg
+    :target: https://github.com/eugene-eeo/tinyrecord/actions/workflows/test.yml
 .. _TinyDB: https://github.com/msiemens/tinydb

@@ -42,7 +42,7 @@ def records(cls: Type[Operation]) -> Callable[..., None]:
     @wraps(cls)
     def proxy(self: "transaction", *args: Any, **kwargs: Any) -> None:
         # Too many arguments for "Operation"
-        self.record.append(cls(*args, **kwargs))  # type: ignore[call-arg]
+        self.record.append(cls(*args, **kwargs))
     return proxy
 
 
